@@ -39,8 +39,9 @@ MatterHoop.game = function() {
     Runner.run(runner, engine);
 
 
-    // var rock = new LeftRock(200, 100, 50, 50);
-
+    // var myAudio = document.createElement("audio");
+    // myAudio.src = "./purrple-cat-waiting-for-the-sun.mp3";
+    // myAudio.play();
 
     var defaultCategory = 0x0001,
         snowCategory = 0x0002;
@@ -88,9 +89,9 @@ MatterHoop.game = function() {
 
     setInterval(() => {
       Composite.add(world,
-        Bodies.circle(randomNumber(-150, 970), 0, 2, {
+        Bodies.circle(randomNumber(-150, 970), 0, randomNumber(2, 5), {
           isSensor: true,
-          frictionAir: 1,
+          frictionAir: randomNumber(0.2, 1),
           render: {
             strokeStyle: colorA,
             fillStyle: 'white',
@@ -107,6 +108,7 @@ MatterHoop.game = function() {
       if (minutes === 0 && seconds === 0) {
       document.getElementById('timer').innerHTML = (`TIMES UP!`)
       document.getElementById('score').innerHTML = (`FINAL SCORE: ${score}`)
+      clearInterval()
       }
       else if (seconds === 0 && minutes > 0) {
         minutes -= 1
