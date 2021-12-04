@@ -3,7 +3,7 @@ var buttons = document.getElementsByTagName('button');
 var volume = document.getElementById('musicVolume');
 var stopTime = 0;
 
-myAudio.volume = 0.5;
+myAudio.volume = 0.2;
 myAudio.loop = true;
 
 const changeVolume = () => {
