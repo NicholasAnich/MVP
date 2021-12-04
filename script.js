@@ -24,7 +24,8 @@ MatterHoop.game = function() {
         options: {
             width: 1830,
             height: 900,
-            showAngleIndicator: true
+            showAngleIndicator: false,
+            wireframes: false
         }
     });
 
@@ -34,36 +35,113 @@ MatterHoop.game = function() {
     var runner = Runner.create();
     Runner.run(runner, engine);
 
-    // add bodies
-    // var ground = Bodies.rectangle(400, 610, 1830, 50, { isStatic: true, render: { fillStyle: '#060a19' } }),
-        // rockOptions = { density: 0.004 },
-        // rock = Bodies.polygon(170, 450, 8, 20, rockOptions),
-        // anchor = { x: 170, y: 450 },
-        // elastic = Constraint.create({
-        //     pointA: anchor,
-        //     bodyB: rock,
-        //     stiffness: 0.09
-        // });
 
-    var pyramid = Composites.pyramid(500, 300, 9, 10, 0, 0, function(x, y) {
-        return Bodies.rectangle(x, y, 25, 40);
+    rockOptions = {
+      density: 0.001,
+      friction: 0.05,
+      render: {
+        strokeStyle: '#ffffff',
+        sprite: {
+            texture: '../pngwing.com.png',
+            xScale: .35,
+            yScale: .35
+        }
+      }
+    }
+    // LEFT ROCK
+    leftRock = Bodies.polygon(-25, 450, 8, 20, rockOptions)
+
+    leftAnchor = { x: -25, y: 450 }
+
+    leftElastic = Constraint.create({
+        pointA: leftAnchor,
+        bodyB: leftRock,
+        stiffness: 0.1
     });
 
-    // var ground2 = Bodies.rectangle(610, 250, 200, 20, { isStatic: true, render: { fillStyle: '#060a19' } });
 
-    var pyramid2 = Composites.pyramid(550, 0, 5, 10, 0, 0, function(x, y) {
-        return Bodies.rectangle(x, y, 25, 40);
+    // RIGHT ROCK
+    rockRight = Bodies.polygon(800, 450, 8, 20, rockOptions)
+
+    rightAnchor = { x: 800, y: 450 },
+
+    rightElastic = Constraint.create({
+      pointA: rightAnchor,
+      bodyB: rockRight,
+      stiffness: 0.05
     });
 
-    Composite.add(engine.world, [ground, pyramid, ground2, pyramid2, rock, elastic]);
+    Composite.add(engine.world, [
+      ground,
+
+      wallTop,
+      wallBottom,
+      wallRight,
+      wallLeft,
+
+      barrierBottom,
+      barrierLeft,
+      barrierRight,
+
+      collisionBottom,
+      collisionLeft,
+      collisionRight,
+
+      leftRock,
+      leftElastic,
+
+      rockRight,
+      rightElastic,
+    ]);
 
     Events.on(engine, 'afterUpdate', function() {
-        if (mouseConstraint.mouse.button === -1 && (rock.position.x > 190 || rock.position.y < 430)) {
-            rock = Bodies.polygon(170, 450, 7, 20, rockOptions);
-            Composite.add(engine.world, rock);
-            elastic.bodyB = rock;
-        }
+      if (mouseConstraint.mouse.button === -1 &&
+         (leftRock.position.x < -70 ||
+          leftRock.position.y < 430)) {
+        leftRock = Bodies.polygon(-25, 450, 7, 20, rockOptions);
+        Composite.add(engine.world, leftRock);
+        leftElastic.bodyB = leftRock;
+      }
     });
+
+    let colorA = 'green'
+    let colorB = 'green'
+    let score = 0
+
+    Events.on(engine, 'collisionStart', function(event) {
+      var pairs = event.pairs;
+
+      for (var i = 0, j = pairs.length; i != j; ++i) {
+        var pair = pairs[i];
+        // console.log(pair)
+
+          if (pair.bodyA === collisionBottom) {
+              pair.bodyB.render.strokeStyle = colorA;
+              score++
+              console.log(`Your score is: ${score}`)
+          } else if (pair.bodyB === collisionBottom) {
+              pair.bodyA.render.strokeStyle = colorA;
+              score++
+          }
+      }
+  });
+
+  Events.on(engine, 'collisionEnd', function(event) {
+    var pairs = event.pairs;
+
+    for (var i = 0, j = pairs.length; i != j; ++i) {
+        var pair = pairs[i];
+
+        if (pair.bodyA === collisionBottom) {
+            pair.bodyB.render.strokeStyle = colorB;
+        } else if (pair.bodyB === collisionBottom) {
+            pair.bodyA.render.strokeStyle = colorB;
+        }
+    }
+  });
+
+  // GRAVITY
+   engine.gravity.y = .9
 
     // add mouse control
     var mouse = Mouse.create(render.canvas),
@@ -101,7 +179,7 @@ MatterHoop.game = function() {
     };
 };
 
-MatterHoop.game.title = 'Slingshot';
+MatterHoop.game.title = 'MatterHoop';
 MatterHoop.game.for = '>=0.14.2';
 
 if (typeof module !== 'undefined') {

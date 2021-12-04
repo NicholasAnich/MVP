@@ -8,18 +8,25 @@ var ground = Bodies.rectangle(400, 610, 1830, 50, {
     }
   })
 
-var ground2 = Bodies.rectangle(610, 250, 200, 20, {
+var barrierBottom = Bodies.rectangle(370, 250, 200, 20, {
    isStatic: true,
     render: {
-       fillStyle: '#060a19'
+       fillStyle: 'lightblue'
       }
     });
-rockOptions = { density: 0.004 },
-rock = Bodies.polygon(170, 450, 8, 20, rockOptions),
-anchor = { x: 170, y: 450 },
-elastic = Constraint.create({
-    pointA: anchor,
-    bodyB: rock,
-    stiffness: 0.09
-});
 
+var barrierLeft = Bodies.rectangle(270, 210, 20, 100, {
+  isStatic: true,
+    render: {
+      fillStyle: 'lightblue',
+      rotate: 25
+    }
+})
+
+var barrierRight = Bodies.rectangle(470, 210, 20, 100, {
+  isStatic: true,
+    render: {
+      fillStyle: 'lightblue',
+      rotate: 25
+    }
+})
