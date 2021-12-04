@@ -1,0 +1,24 @@
+{
+  "name": "mvp",
+  "version": "1.0.0",
+  "description": "MVP sprint for Hack Reactor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicholasAnich/MVP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicholasAnich/MVP/issues"
+  },
+  "homepage": "https://github.com/NicholasAnich/MVP#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "matter-js": "^0.17.1"
+  }
+}
