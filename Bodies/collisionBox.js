@@ -1,6 +1,5 @@
 var Bodies = Matter.Bodies;
 var Constraint = Matter.Constraint;
-var SAT = Matter.SAT;
 
 var collisionBottom = Bodies.rectangle(370, 250, 200, 20, {
    isStatic: true,
