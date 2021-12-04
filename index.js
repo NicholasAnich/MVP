@@ -11,6 +11,6 @@ router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname+'/index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Listening on port:${port}`)
+app.listen(process.env.PORT || 5000, () => {
+  console.log(`Listening on port:${PORT}`)
 })
