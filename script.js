@@ -39,11 +39,6 @@ MatterHoop.game = function() {
     var runner = Runner.create();
     Runner.run(runner, engine);
 
-
-    // var myAudio = document.createElement("audio");
-    // myAudio.src = "./purrple-cat-waiting-for-the-sun.mp3";
-    // myAudio.play();
-
     var defaultCategory = 0x0001,
         snowCategory = 0x0002;
 
@@ -51,11 +46,7 @@ MatterHoop.game = function() {
 
     rockOptions = {
       density: 0.005,
-      // friction: 0.05,
       friction: 0.05,
-      // collisionFilter: {
-      //   category: snowCategory,
-      // },
       render: {
         strokeStyle: '#ffffff',
         sprite: {
@@ -127,18 +118,26 @@ MatterHoop.game = function() {
     }, 1000)
 
         // add revolute constraint
-        var bodyA = Bodies.rectangle(700, 170, 100, 20);
+        var bodyA = Bodies.rectangle(700, 130, 100, 20, {
+          render: {
+            fillStyle: '#86d6d8'
+          }
+        });
 
         var constraintA = Constraint.create({
-            pointA: { x: 700, y: 170 },
+            pointA: { x: 700, y: 130 },
             bodyB: bodyA,
             length: 0
         });
 
-        var bodyB = Bodies.rectangle(100, 170, 100, 20);
+        var bodyB = Bodies.rectangle(100, 130, 100, 20, {
+          render: {
+            fillStyle: '#20c3d0'
+          }
+        });
 
         var constraintB = Constraint.create({
-            pointA: { x: 100, y: 170 },
+            pointA: { x: 100, y: 130 },
             bodyB: bodyB,
             length: 0
         });
@@ -174,19 +173,6 @@ MatterHoop.game = function() {
     }
 
 
-
-    // var body = Bodies.rectangle(400, 500, 200, 60, {
-    //   isStatic: true,
-    //   chamfer: 10,
-    //   render: {
-    //     fillStyle: '#060a19'
-    //   }
-    // }),
-    // size = 50,
-    // counter = -1;
-
-
-
     setInterval(() => {
       var gravity = engine.gravity.x;
       engine.gravity.x = 0
@@ -211,7 +197,7 @@ MatterHoop.game = function() {
       wallRight,
       wallLeft,
 
-      barrierBottom,
+      // barrierBottom,
       barrierLeft,
       barrierRight,
 
@@ -225,11 +211,16 @@ MatterHoop.game = function() {
       rightRock,
       rightElastic,
 
-      // snow,
       cloth,
 
-      Bodies.rectangle(200, 350, 280, 20, { isStatic: true, angle: Math.PI * 0.30, render: { fillStyle: '#060a19' } }),
-      Bodies.rectangle(570, 350, 280, 20, { isStatic: true, angle: Math.PI * - 0.30, render: { fillStyle: '#060a19' } }),
+      Bodies.rectangle(200, 350, 280, 20, { isStatic: true, angle: Math.PI * 0.30, render: {
+        fillStyle: './iceTexture.jpg',
+      } }),
+      Bodies.rectangle(570, 350, 280, 20, { isStatic: true, angle: Math.PI * - 0.30, render: {
+        fillStyle: './iceTexture.jpg'
+       } }),
+       Bodies.rectangle(408, 356, 8, 8, { isStatic: true, render: {visible: false}}),
+       Bodies.rectangle(337, 356, 8, 8, { isStatic: true, render: {visible: false}}),
     ]);
 
     Events.on(engine, 'beforeUpdate', function(event) {
@@ -239,26 +230,11 @@ MatterHoop.game = function() {
           return;
       }
 
-      // let otherCounter += 0.013;
       var px = 400 + 100 * Math.sin(counter);
 
-    //  cloth.bodies.forEach(body => {
-    //   //  console.log(body.position.x + 2 * Math.sin(counter), 'CLOTH')
-    //     return Body.setPosition(body, {x: px, y: body.position.y})
-    //     // console.log(body)
-    //   })
-
-      // console.log(px)
-      // body is static so must manually update velocity for friction to work
-      // Body.setVelocity(body, { x: px - body.position.x, y: 0 });
-      // Body.setPosition(body, { x: px, y: body.position.y });
-      Body.setPosition(barrierBottom, { x: px, y: barrierBottom.position.y});
       Body.setPosition(barrierLeft, { x: px - 110, y: barrierLeft.position.y});
       Body.setPosition(barrierRight, { x: px + 110, y: barrierRight.position.y});
-
       // Body.setPosition(collisionBottom, { x: px, y: collisionBottom.position.y});
-      // Body.setPosition(clothPosition, { x: px, y: clothPosition.position.y})
-      // Body.setPosition(cloth, { x: px, y: cloth.position.y});
     });
 
     // console.log(clothPosition)
@@ -320,11 +296,6 @@ MatterHoop.game = function() {
         }
     }
 
-    // pairs.forEach(({ bodyA, bodyB}) => {
-    //   if (bodyA === leftRock || bodyB === leftRock) {
-    //     Matter.World.remove(leftRock)
-    //   }
-    // })
   });
 
 
@@ -354,15 +325,6 @@ MatterHoop.game = function() {
         max: { x: 800, y: 600 }
     });
 
-    // console.log(engine)
-    // console.log(world.bodies)    // setInterval(() => {
-    //   console.log(world.bodies)
-    // }, 10000)
-
-    // setTimeout(() => {
-    //   console.log(world.bodies)
-    // }, 10000)
-    // context for MatterTools.Demo
     return {
         engine: engine,
         runner: runner,
@@ -402,7 +364,6 @@ MatterHoop.game.cloth = function(
   particleOptions = Common.extend({
     inertia: Infinity,
     friction: 0.0001,
-    // isSensor: true,
     collisionFilter: { group: group },
     render: { visible: false }},
     particleOptions);
