@@ -186,7 +186,7 @@ MatterHoop.game = function() {
 
 
     setInterval(() => {
-      engine.gravity.x = randomNumber(-10, 10)
+      engine.gravity.x = randomNumber(-5, 5)
     }, 50000)
 
     Composite.add(world, [
