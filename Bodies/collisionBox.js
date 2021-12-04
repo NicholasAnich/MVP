@@ -1,12 +1,15 @@
 var Bodies = Matter.Bodies;
 var Constraint = Matter.Constraint;
 
-var collisionBottom = Bodies.rectangle(370, 250, 200, 20, {
+var collisionBottom = Bodies.rectangle(370, 355, 70, 1, {
    isStatic: true,
    opacity: .2,
    isSensor: true,
     render: {
-       fillStyle: 'red'
+      visible: true,
+       fillStyle: 'rgba(255, 255, 255, 0.5)',
+      //  fillStyle: 'red'
+      lineWidth: 0
       }
     });
 

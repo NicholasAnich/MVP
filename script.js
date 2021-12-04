@@ -12,7 +12,8 @@ MatterHoop.game = function() {
         Mouse = Matter.Mouse,
         Common = Matter.Common,
         Composite = Matter.Composite,
-        Bodies = Matter.Bodies;
+        Bodies = Matter.Bodies,
+        Body = Matter.Body;
 
     // create engine
     var engine = Engine.create(),
@@ -49,7 +50,7 @@ MatterHoop.game = function() {
     var colorA = '#ffff';
 
     rockOptions = {
-      density: 0.001,
+      density: 0.005,
       // friction: 0.05,
       friction: 0.05,
       // collisionFilter: {
@@ -59,8 +60,8 @@ MatterHoop.game = function() {
         strokeStyle: '#ffffff',
         sprite: {
             texture: '../pngwing.com.png',
-            xScale: .35,
-            yScale: .35
+            xScale: .30,
+            yScale: .30
         }
       }
     }
@@ -125,6 +126,26 @@ MatterHoop.game = function() {
 
     }, 1000)
 
+        // add revolute constraint
+        var bodyA = Bodies.rectangle(700, 170, 100, 20);
+
+        var constraintA = Constraint.create({
+            pointA: { x: 700, y: 170 },
+            bodyB: bodyA,
+            length: 0
+        });
+
+        var bodyB = Bodies.rectangle(100, 170, 100, 20);
+
+        var constraintB = Constraint.create({
+            pointA: { x: 100, y: 170 },
+            bodyB: bodyB,
+            length: 0
+        });
+
+
+        Composite.add(world, [bodyA, bodyB, constraintA, constraintB]);
+
 
 
     // FILTER SNOW
@@ -140,6 +161,31 @@ MatterHoop.game = function() {
     //     });
     //   }
     // }, 5000)
+
+    var cloth = MatterHoop.game.cloth(
+      330, 350, 10, 5,
+      5,   5,   false,
+      2
+      );
+
+    for (var i = 0; i < 20; i++) {
+      cloth.bodies[i].isStatic = true;
+      cloth.bodies[i].isSensor = true;
+    }
+
+
+
+    // var body = Bodies.rectangle(400, 500, 200, 60, {
+    //   isStatic: true,
+    //   chamfer: 10,
+    //   render: {
+    //     fillStyle: '#060a19'
+    //   }
+    // }),
+    // size = 50,
+    // counter = -1;
+
+
 
     setInterval(() => {
       var gravity = engine.gravity.x;
@@ -170,8 +216,8 @@ MatterHoop.game = function() {
       barrierRight,
 
       collisionBottom,
-      collisionLeft,
-      collisionRight,
+      // collisionLeft,
+      // collisionRight,
 
       leftRock,
       leftElastic,
@@ -180,7 +226,42 @@ MatterHoop.game = function() {
       rightElastic,
 
       // snow,
+      cloth,
+
+      Bodies.rectangle(200, 350, 280, 20, { isStatic: true, angle: Math.PI * 0.30, render: { fillStyle: '#060a19' } }),
+      Bodies.rectangle(570, 350, 280, 20, { isStatic: true, angle: Math.PI * - 0.30, render: { fillStyle: '#060a19' } }),
     ]);
+
+    Events.on(engine, 'beforeUpdate', function(event) {
+      counter += 0.014;
+
+      if (counter < 0) {
+          return;
+      }
+
+      // let otherCounter += 0.013;
+      var px = 400 + 100 * Math.sin(counter);
+
+    //  cloth.bodies.forEach(body => {
+    //   //  console.log(body.position.x + 2 * Math.sin(counter), 'CLOTH')
+    //     return Body.setPosition(body, {x: px, y: body.position.y})
+    //     // console.log(body)
+    //   })
+
+      // console.log(px)
+      // body is static so must manually update velocity for friction to work
+      // Body.setVelocity(body, { x: px - body.position.x, y: 0 });
+      // Body.setPosition(body, { x: px, y: body.position.y });
+      Body.setPosition(barrierBottom, { x: px, y: barrierBottom.position.y});
+      Body.setPosition(barrierLeft, { x: px - 110, y: barrierLeft.position.y});
+      Body.setPosition(barrierRight, { x: px + 110, y: barrierRight.position.y});
+
+      // Body.setPosition(collisionBottom, { x: px, y: collisionBottom.position.y});
+      // Body.setPosition(clothPosition, { x: px, y: clothPosition.position.y})
+      // Body.setPosition(cloth, { x: px, y: cloth.position.y});
+    });
+
+    // console.log(clothPosition)
 
     Events.on(engine, 'afterUpdate', function() {
       if (mouseConstraint.mouse.button === -1 &&
@@ -302,5 +383,51 @@ MatterHoop.game.for = '>=0.14.2';
 if (typeof module !== 'undefined') {
     module.exports = MatterHoop.game;
 }
+
+
+MatterHoop.game.cloth = function(
+  xx, yy, columns, rows,
+  columnGap, rowGap, crossBrace,
+  particleRadius, particleOptions,
+  constraintOptions)
+  {
+
+  var Body = Matter.Body,
+      Bodies = Matter.Bodies,
+      Common = Matter.Common,
+      Composites = Matter.Composites;
+
+  var group = Body.nextGroup(true);
+
+  particleOptions = Common.extend({
+    inertia: Infinity,
+    friction: 0.0001,
+    // isSensor: true,
+    collisionFilter: { group: group },
+    render: { visible: false }},
+    particleOptions);
+
+  constraintOptions = Common.extend({
+    stiffness: 0.02,
+    isSensor: true,
+    render: {
+    type: 'line',
+    anchors: false
+    }
+  },
+    constraintOptions);
+
+  var cloth = Composites.stack(xx, yy, columns, rows, columnGap, rowGap, function(x, y) {
+      return Bodies.circle(x, y, particleRadius, particleOptions);
+  });
+
+  Composites.mesh(cloth, columns, rows, crossBrace, constraintOptions);
+
+  cloth.label = 'Cloth Body';
+
+  console.log(cloth.position, 'CLOTH')
+
+  return cloth;
+};
 
 MatterHoop.game()
